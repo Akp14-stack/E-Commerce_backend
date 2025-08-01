@@ -42,6 +42,26 @@ const orderSchema = new mongoose.Schema({
     required: true
   },
 
+  mobile: {
+    type: String,
+    required: true,
+    match: /^\d{10}$/
+  },
+
+  paymentMethod: {
+    type: String,
+    enum: ['razorpay', 'cod'],
+    default: 'cod'
+  },
+
+  razorpayPaymentId: {
+    type: String
+  },
+
+  razorpayOrderId: {
+    type: String
+  },
+
   status: {
     type: String,
     enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
@@ -56,4 +76,3 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 module.exports = Order;
-

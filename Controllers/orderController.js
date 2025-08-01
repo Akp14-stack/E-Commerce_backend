@@ -10,8 +10,9 @@ const createOrder = async (req, res) => {
       return res.status(401).json({ status: false, message: 'Unauthorized: No user found' });
     }
 
-    const { items, total, address } = req.body;
+    const { items, total, address, mobile, paymentMethod, razorpayOrderId, razorpayPaymentId } = req.body;
 
+    // Basic validations
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ status: false, message: 'Cart items are required' });
     }
@@ -24,11 +25,19 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ status: false, message: 'Delivery address is required' });
     }
 
+    if (!mobile || !/^\d{10}$/.test(mobile)) {
+      return res.status(400).json({ status: false, message: 'Valid 10-digit mobile number is required' });
+    }
+
     const newOrder = await Order.create({
       user: userId,
       items,
       total,
       address,
+      mobile,
+      paymentMethod: paymentMethod || 'cod',
+      razorpayOrderId,
+      razorpayPaymentId,
     });
 
     res.status(201).json({ status: true, message: 'Order placed successfully', order: newOrder });
@@ -66,7 +75,7 @@ const getAllOrders = async (req, res) => {
 
     const totalOrders = await Order.countDocuments();
     const orders = await Order.find()
-      .populate('user', 'name email')
+      .populate('user', 'name email mobile')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
