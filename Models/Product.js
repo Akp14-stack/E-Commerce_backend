@@ -30,6 +30,10 @@ const productSchema = new mongoose.Schema({
     default: 0,
     min: [0, 'Stock cannot be negative'],
   },
+  featured: {
+    type: Boolean,
+    default: false, // default not featured
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);
